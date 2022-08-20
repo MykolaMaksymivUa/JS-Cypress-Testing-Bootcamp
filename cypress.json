@@ -1,7 +1,10 @@
 {
     "reporter": "cypress-mochawesome-reporter",
     "video": false,
-    "defaultCommandTimeout": 10000,
+    "defaultCommandTimeout": 5000,
     "watchForFileChanges": false,
-    "baseUrl": "http://zero.webappsecurity.com"
+    "baseUrl": "http://zero.webappsecurity.com",
+    "env": {
+        "API_PREFIX": "https://pokeapi.co/api/v2"
+    }
 }

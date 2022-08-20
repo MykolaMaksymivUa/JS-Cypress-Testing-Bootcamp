@@ -15,6 +15,8 @@
 
 // Import commands.js using ES2015 syntax:
 import './app';
+import './user.actions';
+import './visual.config';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
