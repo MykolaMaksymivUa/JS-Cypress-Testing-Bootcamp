@@ -1,29 +1,3 @@
-declare namespace Cypress {
-    interface Chainable {
-        /**
-         * @param username - takes username or id
-         * @param password - takes user password
-         */
-        login(username: string, password: string): Chainable<Element>;
-
-        loginMockUser(): Chainable<Element>;
-
-        /**
-         *
-         * @param name - takes name of the message author
-         * @param email - takes email (there is no validation on the backend)
-         * @param subject - takes subjects of the message
-         * @param message - the messages of the author
-         */
-        submitFeedback(
-            name: string,
-            email: string,
-            subject: string,
-            message: string
-        ): Chainable<Element>;
-    }
-}
-
 Cypress.Commands.add('login', (username, password) => {
     cy.get('#user_login').type(username);
     cy.get('#user_password').type(password);
@@ -41,6 +15,30 @@ Cypress.Commands.add('loginMockUser', () => {
     cy.fixture('loginData').then(({ username, password }) => {
         cy.login(username, password);
     });
+});
+
+Cypress.Commands.add('headlessLogin', () => {
+    const realAppVars = Cypress.env('REAL_APP');
+    const userCredentials = {
+        user: {
+            email: realAppVars.username,
+            password: realAppVars.password,
+        },
+    };
+
+    cy.request('POST', realAppVars.apiUrl + '/users/login', userCredentials)
+        .its('body')
+        .then((body) => {
+            const token = body.user.token;
+
+            // cypress wrap an object with cy yield method wrapper
+            cy.wrap(token).as('token');
+            cy.visit(realAppVars.baseUrl, {
+                onBeforeLoad(win) {
+                    win.localStorage.setItem('jwtToken', token);
+                },
+            });
+        });
 });
 
 Cypress.Commands.add('submitFeedback', (name, email, subject, message) => {
